@@ -15,3 +15,4 @@ gem 'typeform'
 
 # Debugging (Dev Only)
 gem 'pry'
+gem 'json'
