@@ -7,6 +7,8 @@ gem 'restforce'
 #Typeform Rest API Gem
 gem 'typeform'
 
+gem "zendesk_api"
+
 # gem 'capybara'
 # gem 'poltergeist'
 # Writing to a Google Spreadsheet
@@ -16,3 +18,4 @@ gem 'typeform'
 # Debugging (Dev Only)
 gem 'pry'
 gem 'json'
+

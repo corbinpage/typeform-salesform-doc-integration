@@ -1,0 +1,41 @@
+{% extends "raw.twig" %}
+
+{% block content %}
+    <script type="text/javascript" language="JavaScript"
+        src="https://secureform.luxsci.com/intranet/php/secureform.php?v=1&c=12775-2794-sfkh&f=submit_your_audiogram"></script>
+
+    <form name="submit_your_audiogram" id="audiogram-form"
+        enctype="multipart/form-data" method="post" action="https://secureform.luxsci.com/perl/post/12775-2794-sfkh"
+    >
+        <div class="form-left">
+            <div class="field">
+                <input disabled="disabled" maxlength="127" type="text" value="TO: test@audicus.com" class="form-control" required />
+            </div>
+            <div class="field">
+                <input maxlength="127" name="name" placeholder="Your Full Name" size="30" type="text" class="form-control" title="Required" required />
+            </div>
+            <div class="field">
+                <input maxlength="127" name="email" placeholder="Your Email Address" size="30" type="email" class="form-control" title="Required" required />
+            </div>
+            <div class="field">
+                <input maxlength="127" name="phone" placeholder="Your Phone Number" size="30" type="text" class="form-control" title="Required" required />
+            </div>
+        </div>
+
+        <div class="form-right">
+            <div class="file-wrapper">
+                <input name="audiogram" type="file" title="Please select a file" required />
+                <span class="upload-input-message">Upload your audiogram</span>
+            </div>
+
+            <div class="waiver-bill-of-sell-checkbox">
+                <label>
+                    <input type="checkbox" name="waiver" value="agree" id="waiver" title="Required" required />
+                    <span></span> I accept this <a href="{{ options.fdawaiver }}" target="_blank">FDA Waiver</a> and do not have any of the conditions outlined therein
+                </label>
+            </div>
+
+            <input type="submit" value="Send Email" class="btn btn-primary" id="submit-form" />
+        </div>
+    </form>
+{% endblock %}
