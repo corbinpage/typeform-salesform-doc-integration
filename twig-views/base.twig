@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]> <html class="ie6 no-js"> <![endif]-->
+<!--[if IE 7 ]>    <html class="ie7 no-js"> <![endif]-->
+<!--[if IE 8 ]>    <html class="ie8 no-js"> <![endif]-->
+<!--[if IE 9 ]>    <html class="ie9 no-js"> <![endif]-->
+<!--[if gt IE 9]>  <html class="gt-ie9 no-js"> <![endif]-->
+<!--[if !(IE)]><!--> <html class="no-js"> <!--<![endif]-->
+<head lang="en">
+    <script src="//cdn.optimizely.com/js/72328604.js"></script>
+    <title>{{ site.title }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="hgnF4aT7QLUNtF3FA0Xq8S7ZmxFouYq3rSEggYHeWCM" />
+    <link rel="shortcut icon" href="{{ template_uri }}/assets/favicon.png"/>
+
+    {{ wp_head }}
+
+    <script>
+        ga('require', 'linker');
+        ga('linker:autoLink', ['shop.audicus.com'] );
+    </script>
+
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="{{ body_class }}" data-spy="scroll">
+<!-- Google Tag Manager -->
+<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-52SLZJ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-52SLZJ');</script>
+<!-- End Google Tag Manager -->
+
+    <header>
+
+        <div class="container">
+            <div class="top">
+                <div class="left">
+                    <a href="{{ site.url }}"><h1><div class="logo-dark">Audicus</div></h1></a>
+
+                </div>
+                <div class="right">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".primary-navigation">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="menu">Menu</span>
+                        <div class="icon-bars">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </div>
+                    </button>
+                    <div class="hidden-xs">
+                        <h4 class="contact-info">Have Questions? {{ options.phone }}</h4>
+                        <form action="/" method="post" class="search-form" data-post-url="{{ template_uri }}/get-products.php">
+                            <input type="search" id="s" name="s" placeholder="Search" value="{{ function('get_search_query') }}" class="form-control">
+                            <button type="submit"><i class="glyphicon glyphicon-search icon-search"></i></button>
+                        </form>
+                        <a href="{{ options.shopurl }}/cart" class="btn btn-primary cart-btn"><i class="glyphicon glyphicon-shopping-cart"></i> Cart</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="row">
+                    <div class="visible-xs"><h4 class="contact-info">Have Questions? {{ options.phone }}</h4></div>
+                    <div class="collapse navbar-collapse primary-navigation">
+                        <ul class="nav navbar-nav">
+                            <li {{ function('is_page', 'Home') ? 'class="active"' : '' }}><a href="{{ site.url }}">Home</a></li>
+                            <li {{ function('is_page', 'Why Audicus') ? 'class="active"' : '' }}><a href="{{ site.url }}/why-audicus/">Why Audicus</a></li>
+                            <li {{ function('is_page', 'Get a Hearing Aid') ? 'class="active"' : '' }}><a href="{{ site.url }}/get-a-hearing-aid/">Get a Hearing Aid</a></li>
+                            <li><a href="{{ options.shopurl }}">Products</a></li>
+                            <li {{ function('is_page', 'Customer Service') ? 'class="active"' : '' }}><a href="{{ site.url }}/customer-service/">Customer Service</a></li>
+                            <li class="visible-xs navbar-form">
+                                <form data-search-url="{{ options.shopurl }}/search" class="search-form">
+                                    <input type="search" id="q" name="q" placeholder="Search" class="form-control">
+                                    <button type="submit"><i class="glyphicon glyphicon-search icon-search"></i></button>
+                                </form>
+                            </li>
+                            <li class="visible-xs"><a href="{{ options.shopurl }}/cart" class="btn btn-primary cart-btn"><i class="glyphicon glyphicon-shopping-cart"></i> Cart</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="blog"><a href="{{ site.url }}/blog/">Blog</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+    </header>
+
+        {% block content %}
+
+        <section class="main">
+            <div class="container">
+                <div class="col-sm-12">
+                    {% for post in posts %}
+                        {{ post.content }}
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        {% endblock %}
+
+    <footer>
+
+        {% block footer ''%}
+        <div class="btm">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <a href="{{ site.url }}" class="logo-white">Audicus</a>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <ul class="list-links">
+                                <li><a href="{{ site.url }}/">Home</a></li>
+                                <li><a href="{{ site.url }}/why-audicus/">Why Audicus</a></li>
+                                <li><a href="{{ site.url }}/get-a-hearing-aid/">Get a Hearing Aid</a></li>
+                                <li><a href="{{ options.shopurl }}">Products</a></li>
+                                <li><a href="{{ options.shopurl }}/#accessories">Accessories</a></li>
+                            </ul>
+                            <ul class="list-links">
+                                <li><a href="{{ site.url }}/blog/">Blog</a></li>
+                                <li><a href="{{ site.url }}/customer-service/#faq">FAQ</a></li>
+                                <li><a href="{{ site.url }}/press/">Press</a></li>
+                                <li><a href="http://audicus.theresumator.com/apply" target="_blank">Jobs</a></li>
+                                <li><a href="{{ site.url }}/returns/">Returns</a></li>
+                            </ul>
+                            <ul class="list-links">
+                                <li><a href="{{ site.url }}/customer-service/">Customer Service</a></li>
+                                <li><a href="#" data-toggle="modal" data-target="#contact-modal">Contact</a></li>
+                                <li><a href="{{ site.url }}/privacy-policy/">Privacy Policy</a></li>
+                                <li><a href="{{ site.url }}/terms-of-service/">Terms of Service</a></li>
+                            </ul>
+                            <div class="contact-info">
+                                <div>
+                                    <i class="icon icon-phone"></i> {{ options.phone }}<br> M-F: 9am-9pm ET
+                                </div>
+                                <div>
+                                    <i class="icon icon-email"></i> <a href="#" data-toggle="modal" data-target="#contact-modal">{{ options.contactemail }}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Sign Up for the Audicus Email Newsletter:</h5>
+                        <div class="mailchimp-form">
+                            <form action="https://audicus.us2.list-manage.com/subscribe/post?u=a4026f6bd29d594455bd483ea&amp;id=2e2969ef0c" method="post" id="footer-form" target="_blank">
+                                <div class="input-group">
+                                    <input type="email" id="mce-EMAIL" name="EMAIL" placeholder="Email address" class="required form-control">
+                                    <div class="input-group-btn">
+                                        <button type="submit" class="btn btn-default">Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <ul class="list-social">
+                            <li><a href="{{ options.facebook }}" class="icon icon-facebook" target="_blank">Facebook</a></li>
+                            <li><a href="{{ options.twitter }}" class="icon icon-twitter" target="_blank">Twitter</a></li>
+                            <li><a href="{{ options.pinterest }}" class="icon icon-pinterest" target="_blank">Pinterest</a></li>
+                            <li><a href="{{ options.googleplus }}" class="icon icon-googleplus" target="_blank">Google+</a></li>
+                            <li><a href="{{ options.instagram }}" class="icon icon-instagram" target="_blank">Instagram</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row">
+                    <a href="{{ site.url }}/send-us-your-audiogram" class="btn-dark">Send us your audiogram</a> <a href="{{ options.shopurl }}/account/login" class="btn-dark">Log in</a>
+                    <a style="padding-left: 40px" target="_blank" title="Audicus, Inc. BBB Business Review"
+                        href="http://www.bbb.org/new-york-city/business-reviews/hearing-aids-and-assistive-devices/audicus-inc-in-new-york-ny-148665/#bbbonlineclick"
+                        ><img
+                        alt="Audicus, Inc. BBB Business Review" style="border: 0;"
+                        src="http://seal-newyork.bbb.org/seals/blue-seal-293-61-whitetxt-audicus-inc-148665.png"
+                        /></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="help-bar affix-top">
+        <div class="container hidden-xs">
+            <div class="row">
+                <div class="column">
+                    <h2>Need help?</h2>
+                </div>
+                <div class="column phone">
+                    <i class="icon icon-phone"></i> {{ options.phone }}
+                </div>
+                <div class="column email">
+                    <a href="#" data-toggle="modal" data-target="#help-modal"><i class="icon icon-email"></i> {{ options.helpemail }}</a>
+                </div>
+                <div class="column no-pad chat">
+                    <a href="#" class="btn-chat"><i class="icon icon-chat"></i> Chat with us</a>
+                </div>
+            </div>
+        </div>
+        <div class="container visible-xs text-center">
+            <a href="tel:{{ options.phone }}" class="btn btn-primary"><i class="icon icon-phone"></i> {{ options.phone }}</a>
+        </div>
+    </div>
+
+    <div class="modal fade email" id="contact-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>We're here to help</h3>
+                    <form class="email-form" id="contact-form" action="{{ template_uri }}/email.php" method="post">
+                        <p>Enter the following:</p>
+                        <input type="text" name="NAME" id="form-name-contact" value="" placeholder="Full Name" class="form-control" required>
+                        <input type="email" name="EMAIL" id="form-email-contact" value="" placeholder="Email Address" class="form-control" required>
+                        <input type="tel" name="PHONE" id="form-phone-contact" value="" placeholder="Phone Number" class="form-control" required>
+                        <textarea name="DETAILS" id="details-contact" placeholder="Details" class="form-control" required></textarea>
+                        <input type="text" name="captcha" class="captcha">
+                        <input type="hidden" name="TO_ADDRESS" value="contact@audicus.com" placeholder="">
+                        <input type="hidden" name="redirect_uri" class="redirect-uri" value="{{ site.url }}/#thanks" placeholder="">
+                        <button class="btn">Submit Email</button>
+                    </form>
+                    <h3>Our phone number: <br class="hidden-md hidden-lg">{{ options.phone }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade email" id="help-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>We're here to help</h3>
+                    <form class="email-form" id="help-form" action="{{ template_uri }}/email.php" method="post">
+                        <p>Enter the following:</p>
+                        <input type="text" name="NAME" id="form-name-help" value="" placeholder="Full Name" class="form-control" required>
+                        <input type="email" name="EMAIL" id="form-email-help" value="" placeholder="Email Address" class="form-control" required>
+                        <input type="tel" name="PHONE" id="form-phone-help" value="" placeholder="Phone Number" class="form-control" required>
+                        <textarea name="DETAILS" id="details-help" placeholder="Details" class="form-control" required></textarea>
+                        <input type="text" name="captcha" class="captcha">
+                        <input type="hidden" name="TO_ADDRESS" value="help@audicus.com" placeholder="">
+                        <input type="hidden" name="redirect_uri" class="redirect-uri" value="{{ site.url }}/#thanks" placeholder="">
+                        <button class="btn">Submit Email</button>
+                    </form>
+                    <h3>Our phone number: <br class="hidden-md hidden-lg">{{ options.phone }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="thankyou-message"><h3>Thank you. We will contact you when your message is received.</h3></div>
+    <div id="error-message"><h3>Sorry, an error occured. Please try again later.</h3></div>
+<!--Start of Zopim Live Chat Script-->
+<script type="text/javascript">
+window.$zopim||(function(d,s){var z=$zopim=function(c){z._.push(c)},$=z.s=
+d.createElement(s),e=d.getElementsByTagName(s)[0];z.set=function(o){z.set.
+_.push(o)};z._=[];z.set._=[];$.async=!0;$.setAttribute('charset','utf-8');
+$.src='//v2.zopim.com/?C3lKZeG4bgWhhRyqEVXWdfm6708TrL6y';z.t=+new Date;$.
+type='text/javascript';e.parentNode.insertBefore($,e)})(document,'script');
+</script>
+<!--End of Zopim Live Chat Script-->
+
+<!-- email tracking through Klaviyo  -->
+<script type="text/javascript">
+adroll_adv_id = "AW7SFSCK7ZFKRCZMAG6T4L";
+adroll_pix_id = "5CX3WPJZMRFHFOZC3PYI7I";
+(function () {
+var oldonload = window.onload;
+window.onload = function(){
+     __adroll_loaded=true;
+     var scr = document.createElement("script");
+     var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+     scr.setAttribute('async', 'true');
+     scr.type = "text/javascript";
+     scr.src = host + "/j/roundtrip.js";
+     ((document.getElementsByTagName('head') || [null])[0] ||
+        document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+     if(oldonload){oldonload()}};
+}());
+</script>
+<script type="text/javascript">
+//<![CDATA[
+    (function() {
+        var shr = document.createElement('script');
+        shr.setAttribute('data-cfasync', 'false');
+        shr.src = '//dsms0mj1bbhn4.cloudfront.net/assets/pub/shareaholic.js';
+        shr.type = 'text/javascript'; shr.async = 'true';
+        shr.onload = shr.onreadystatechange = function() {
+            var rs = this.readyState;
+            if (rs && rs != 'complete' && rs != 'loaded') return;
+            var site_id = '9b5413610c00c98b5f1582463d7c7c29';
+            try { Shareaholic.init(site_id); } catch (e) {}
+        };
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(shr, s);
+    })();
+//]]>
+</script>
+{{ wp_footer }}
+
+{% block footer_scripts '' %}
+</body>
+</html>

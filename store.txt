@@ -1,0 +1,488 @@
+-Scheduler to periodically run the code
+-Make Web Service call
+-Parse out the Response
+-Create Contact and attachment
+
+
+
+
+------------------------------------------
+
+Asked stackexchange question
+http://salesforce.stackexchange.com/questions/65601/using-apex-to-retrieve-a-file-from-an-external-restful-web-service
+
+Testing HTTP
+http://salesforce.stackexchange.com/questions/25852/calling-an-external-rest-service-in-apex
+
+------------------------------------------
+
+public class HttpCalloutSample {
+
+  // Pass in the endpoint to be used using the string url
+  public String getCalloutResponseBlobContents(String url) {
+
+    // Instantiate a new http object
+    Http h = new Http();
+
+     // Instantiate a new HTTP request, specify the method (GET) as well as the endpoint
+    HttpRequest req = new HttpRequest();
+    req.setEndpoint(url);
+    req.setMethod('GET');
+    //req.setHeader('Content-Transfer-Encoding','base64');
+  
+
+     try {
+        // Send the request, and return a response
+        HttpResponse res = h.send(req); 
+
+        //Helpful debug messages
+        System.debug(res.toString());
+         
+        System.debug('CP Body:'+res.getBodyAsBlob());
+        System.debug('CP STATUS:'+res.getStatus());
+        System.debug('CP STATUS_CODE:'+res.getStatusCode());         
+        
+         
+        Contact con = new Contact();
+        con.FirstName = 'firstName2'; 
+      con.LastName = 'lastName2'; 
+      con.Email = 'email@test.com';
+      insert con;
+        System.debug('CP Contact:'+con);
+        //System.debug('CP Contact.id1:'+con.get('ContactId'));
+        //System.debug('CP Contact.id:'+con.get('id'));
+         
+        attachFileToContact(res.getBodyAsBlob(), con);
+    
+     } catch(System.CalloutException e) {
+        System.debug('Typeform Request Failed..');
+        //System.debug(res.toString());
+        //System.debug(res.getBody());
+        //System.debug('STATUS:'+res.getStatus());
+        //System.debug('STATUS_CODE:'+res.getStatusCode());
+  }   
+      
+    return 'Doneski';
+  }
+    
+  private static void attachFileToContact(Blob fileAsBlob, Contact con) {
+        Id contactId = con.Id;
+
+    Attachment attach = new Attachment();
+        attach.Body = fileAsBlob;
+      attach.Name = 'TestDoc';
+      attach.IsPrivate = false;
+      attach.ParentId = contactId;
+      
+      insert attach;
+  }
+    
+    
+  // Pass in the endpoint to be used using the string url
+  public String getCalloutResponseContents(String url) {
+
+    // Instantiate a new http object
+    Http h = new Http();
+
+     // Instantiate a new HTTP request, specify the method (GET) as well as the endpoint
+    HttpRequest req = new HttpRequest();
+    req.setEndpoint(url);
+    req.setMethod('GET');
+
+     try {
+        // Send the request, and return a response
+      HttpResponse res = h.send(req); 
+
+        //Helpful debug messages
+        System.debug(res.toString());
+        System.debug('CP Body:'+res.getBody());
+        System.debug('CP STATUS:'+res.getStatus());
+        System.debug('CP STATUS_CODE:'+res.getStatusCode());         
+        
+
+        // Parse JSON response to get create Contacts.
+        //parseTypeformResponse(res.getBody());
+    
+     } catch(System.CalloutException e) {
+        System.debug('Typeform Request Failed..');
+        //System.debug(res.toString());
+        //System.debug(res.getBody());
+        //System.debug('STATUS:'+res.getStatus());
+        //System.debug('STATUS_CODE:'+res.getStatusCode());
+  }   
+      
+    return 'Doneski';
+  }
+    
+  private static Integer createContact(String firstName, String lastName, String email) {        
+    Contact con = new Contact();
+      
+    con.FirstName = firstName; 
+    con.LastName = lastName; 
+    con.Email = email;
+    
+    insert con;
+        
+    System.debug( 'End' );
+    return 1;
+  }
+
+ private static void parseTypeformResponse(String responseBody) {        
+  JSONParser parser = JSON.createParser(responseBody);
+    String name;
+    String filePath;
+         
+    while (parser.nextValue() != null) {
+        // Get responses array
+        if (parser.getCurrentName() == 'responses') {
+            if (parser.getCurrentToken() == JSONToken.START_ARRAY) {
+                while(parser.nextToken() != null) {
+                    // Get a set of answerse
+                    if((parser.getCurrentName() == 'answers') && (parser.getCurrentToken() == JSONToken.START_OBJECT)){
+                         while(parser.nextToken() != null) {
+                            if((parser.getCurrentName() == 'textfield_3502894') && (parser.getCurrentToken() == JSONToken.VALUE_STRING)){
+                                name = parser.getText();
+                            } else if ((parser.getCurrentName() == 'fileupload_3506277') && (parser.getCurrentToken() == JSONToken.VALUE_STRING)) {
+                                filePath = parser.getText(); 
+                            } else if ((parser.getCurrentName() == 'answers') && (parser.getCurrentToken() == JSONToken.END_OBJECT)) {
+                                System.debug('------------------------------'); 
+                                System.debug('Contact('+name+', '+filePath+')'); 
+                                //createContact(name,'LastName','test@test.com');
+                                break; 
+                            } 
+                        } 
+                    }
+                }
+            }
+        }                      
+    }      
+  }
+
+  private static Integer addAttachment(String filepath, Contact contact) {
+
+
+//     try {
+         
+             // Instantiate a new http object
+//    Http h = new Http();
+
+     // Instantiate a new HTTP request, specify the method (GET) as well as the endpoint
+//    HttpRequest req = new HttpRequest();
+//    req.setEndpoint(url);
+//    req.setMethod('GET');
+
+     try {
+        // Send the request, and return a response
+//      HttpResponse res = h.send(req);
+         
+         
+         
+//        Blob picture = req.requestBody;
+//        Attachment a = new Attachment (ParentId = caseId,
+//                                       Body = picture,
+//                                       ContentType = 'image/jpg',
+//                                       Name = 'VehiclePicture');         
+         
+//        RestRequest req = RestContext.request;
+//        RestResponse res = Restcontext.response;
+//        Id caseId = req.requestURI.substring(req.requestURI.lastIndexOf('/')+1);
+//        Blob picture = req.requestBody;
+//        
+//        Attachment a = new Attachment (ParentId = caseId,
+//                                       Body = picture,
+//                                       ContentType = 'image/jpg',
+//                                       Name = 'VehiclePicture');
+
+    
+     } catch(System.CalloutException e) {
+        System.debug('Typeform Attachment Failed..');
+        //System.debug(res.toString());
+        //System.debug(res.getBody());
+        //System.debug('STATUS:'+res.getStatus());
+        //System.debug('STATUS_CODE:'+res.getStatusCode());
+    }   
+
+//    insert a;
+  return 1;                                       
+  }
+
+
+
+}
+
+
+//    global static String attachPic(){
+//        RestRequest req = RestContext.request;
+//        RestResponse res = Restcontext.response;
+//        Id caseId = req.requestURI.substring(req.requestURI.lastIndexOf('/')+1);
+//        Blob picture = req.requestBody;
+//        Attachment a = new Attachment (ParentId = caseId,
+//                                       Body = picture,
+//                                       ContentType = 'image/jpg',
+//                                       Name = 'VehiclePicture');
+
+//private class CreateContactFromTypeform {
+//  public static Integer createContact(String firstName, String lastName, String email) {        
+//    Contact con = new Contact();
+//      
+//    con.FirstName = firstName; 
+//    con.LastName = lastName; 
+//    con.Email = email;
+//    
+//    insert con;
+//        
+//    System.debug( 'End' );
+//    return 1;
+//  }
+//}
+------------------------------------------
+
+
+public class HttpCalloutSample {
+
+  // Pass in the endpoint to be used using the string url
+  public String getCalloutResponseContents(String url) {
+
+    // Instantiate a new http object
+    Http h = new Http();
+
+     // Instantiate a new HTTP request, specify the method (GET) as well as the endpoint
+    HttpRequest req = new HttpRequest();
+    req.setEndpoint(url);
+    req.setMethod('GET');
+
+     try {
+        // Send the request, and return a response
+      HttpResponse res = h.send(req); 
+
+        //Helpful debug messages
+        System.debug(res.toString());
+        System.debug('CP Body:'+res.getBody());
+        System.debug('CP STATUS:'+res.getStatus());
+        System.debug('CP STATUS_CODE:'+res.getStatusCode());         
+        
+
+        // Parse JSON response to get create Contacts.
+        parseTypeformResponse(res.getBody());
+    
+     } catch(System.CalloutException e) {
+        System.debug('Typeform Request Failed..');
+        //System.debug(res.toString());
+        //System.debug(res.getBody());
+        //System.debug('STATUS:'+res.getStatus());
+        //System.debug('STATUS_CODE:'+res.getStatusCode());
+  }   
+      
+    return 'Doneski';
+  }
+    
+  private static Integer createContact(String firstName, String lastName, String email) {        
+    Contact con = new Contact();
+      
+    con.FirstName = firstName; 
+    con.LastName = lastName; 
+    con.Email = email;
+    
+    insert con;
+        
+    System.debug( 'End' );
+    return 1;
+  }
+
+ private static void parseTypeformResponse(String responseBody) {        
+  JSONParser parser = JSON.createParser(responseBody);
+    String name;
+    String filePath;
+         
+    while (parser.nextValue() != null) {
+        // Get responses array
+        if (parser.getCurrentName() == 'responses') {
+            if (parser.getCurrentToken() == JSONToken.START_ARRAY) {
+                while(parser.nextToken() != null) {
+                    // Get a set of answerse
+                    if((parser.getCurrentName() == 'answers') && (parser.getCurrentToken() == JSONToken.START_OBJECT)){
+                         while(parser.nextToken() != null) {
+                            if((parser.getCurrentName() == 'textfield_3502894') && (parser.getCurrentToken() == JSONToken.VALUE_STRING)){
+                                name = parser.getText();
+                            } else if ((parser.getCurrentName() == 'fileupload_3506277') && (parser.getCurrentToken() == JSONToken.VALUE_STRING)) {
+                                filePath = parser.getText(); 
+                            } else if ((parser.getCurrentName() == 'answers') && (parser.getCurrentToken() == JSONToken.END_OBJECT)) {
+                                System.debug('------------------------------'); 
+                                System.debug('Contact('+name+', '+filePath+')'); 
+                                createContact(name,'LastName','test@test.com');
+                                break; 
+                            } 
+                        } 
+                    }
+                }
+            }
+        }                      
+    }      
+  }
+}
+
+
+
+
+
+//    global static String attachPic(){
+//        RestRequest req = RestContext.request;
+//        RestResponse res = Restcontext.response;
+//        Id caseId = req.requestURI.substring(req.requestURI.lastIndexOf('/')+1);
+//        Blob picture = req.requestBody;
+//        Attachment a = new Attachment (ParentId = caseId,
+//                                       Body = picture,
+//                                       ContentType = 'image/jpg',
+//                                       Name = 'VehiclePicture');
+
+//private class CreateContactFromTypeform {
+//  public static Integer createContact(String firstName, String lastName, String email) {        
+//    Contact con = new Contact();
+//      
+//    con.FirstName = firstName; 
+//    con.LastName = lastName; 
+//    con.Email = email;
+//    
+//    insert con;
+//        
+//    System.debug( 'End' );
+//    return 1;
+//  }
+//}
+
+------------------------------------------
+
+HttpCalloutSample a = new HttpCalloutSample();
+a.getCalloutResponseContents(
+        'https://api.typeform.com/v0/form/Su6ppS?key=6c292830a0a440a5efefba2fe496c186e07e965f');
+
+
+public class HttpCalloutSample {
+
+  // Pass in the endpoint to be used using the string url
+  public String getCalloutResponseContents(String url) {
+
+    // Instantiate a new http object
+    Http h = new Http();
+
+     // Instantiate a new HTTP request, specify the method (GET) as well as the endpoint
+    HttpRequest req = new HttpRequest();
+    req.setEndpoint('https://api.typeform.com/v0/form/Su6ppS?key=6c292830a0a440a5efefba2fe496c186e07e965f');
+    req.setMethod('GET');
+
+     try {
+        // Send the request, and return a response
+      HttpResponse res = h.send(req); 
+ 
+        //Helpful debug messages
+        System.debug(res.toString());
+        System.debug(res.getBody());
+        System.debug('STATUS:'+res.getStatus());
+        System.debug('STATUS_CODE:'+res.getStatusCode());
+    
+     } catch(System.CalloutException e) {
+        System.debug('Failed..');
+        //System.debug(res.toString());
+        //System.debug(res.getBody());
+        //System.debug('STATUS:'+res.getStatus());
+        //System.debug('STATUS_CODE:'+res.getStatusCode());
+  }   
+      
+    return 'Doneski';
+  }
+}
+------------------------------------------
+
+Attachment
+
+@RestResource(urlMapping='/CaseManagement/v1/*')
+global with sharing class CaseMgmtService
+{
+
+    @HttpPost
+    global static String attachPic(){
+        RestRequest req = RestContext.request;
+        RestResponse res = Restcontext.response;
+        Id caseId = req.requestURI.substring(req.requestURI.lastIndexOf('/')+1);
+        Blob picture = req.requestBody;
+        Attachment a = new Attachment (ParentId = caseId,
+                                       Body = picture,
+                                       ContentType = 'image/jpg',
+                                       Name = 'VehiclePicture');
+        insert a;
+        return a.Id;
+   }
+}
+
+------------------------------------------
+
+Creating a Contact
+
+public class CreateTypeformContact {
+  public static void sayYou() {
+        System.debug( 'End' );
+        
+        Contact con = new Contact();
+        con.FirstName = 'TestFirstName'; 
+        con.LastName = 'TestLastName'; 
+        con.Email = 'testEmail@test.com';
+      insert con;
+        
+      System.debug( 'End' );
+  }
+}
+
+------------------------------------------
+
+
+public class CreateTypeformContact {
+  public static void sayYou() {
+        System.debug( 'End' );
+        
+        Contact con = new Contact();
+        con.FirstName = 'TestFirstName'; 
+        con.LastName = 'TestLastName'; 
+        con.Email = 'testEmail@test.com';
+      insert con;
+        
+      System.debug( 'End' );
+  }
+}
+
+
+public class MyHelloWorld {
+
+
+    Contact c = new Contact(Name = 'TestFirstName', Email = 'test@test.com');
+
+Account a = new Account(name = 'Acme', billingcity = 'San Francisco');
+
+
+
+   public static void applyDiscount(Book__c[] books) {
+      for (Book__c b :books){
+         b.Price__c *= 0.9;
+      }
+   }
+}
+
+
+public class MyHelloWorld {
+
+public void createForeignKeySample() {
+   try {
+      Opportunity newOpportunity = new Opportunity();
+      newOpportunity.setName('OpportunityWithFK');
+      newOpportunity.setStageName('Prospecting');
+
+      Account parentAccountRef = new Account();
+      parentAccountRef.setMyExtId__c('SAP1111111');
+      newOpportunity.setAccount(parentAccountRef);
+
+      Opportunity[] results = connection
+            .create(new SObject[] { newOpportunity });
+   } catch (ConnectionException ce) {
+      ce.printStackTrace();
+   }
+}
+}

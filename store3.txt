@@ -1,0 +1,142 @@
+public class TypeformIntegration {
+
+  public void getNewAudiograms(String url) {
+    HttpResponse res = getHttpCalloutResponse(url);
+    parseTypeformResponse(res.getBody());
+  }
+  
+  
+  // Pass in the endpoint to be used using the string url
+  private static HttpResponse getHttpCalloutResponse(String url) {
+    // Instantiate a new http object
+    Http h = new Http();
+
+    // Instantiate a new HTTP request, specify the method (GET) as well as the endpoint
+    HttpRequest req = new HttpRequest();
+    req.setEndpoint(url);
+    req.setMethod('GET');
+    HttpResponse res = new HttpResponse();
+    
+    try {
+      // Send the request, and return a response
+      res = h.send(req); 
+
+      //Helpful debug messages
+      System.debug('Querying: '+url);
+      //System.debug(res.getHeader('Content-Type')); // 'text/html; charset=UTF-8'
+      //System.debug(res.getBody());
+      
+      return res;
+      } catch(System.CalloutException e) {
+        System.debug('------Typeform Request Failed------');
+        System.debug('Endpoint: '+req.getEndpoint());
+        System.debug('Status: '+res.getStatusCode()+': '+res.getStatus());
+        System.debug('Headers: '+res.getHeaderKeys());
+        System.debug('Body: '+res.getBody());
+
+        return res;
+      }  
+    }
+
+    private static Attachment getAttachment(String filepath) {
+      Attachment attach = new Attachment();
+    attach.IsPrivate = false;
+      attach.Name = filepath.substringBetween('/blob/', '?key'); 
+        
+      HttpResponse res = getHttpCalloutResponse(filepath);
+      String body = res.getBody();
+      System.debug('Body: '+res.getBody());
+      
+      if (body.contains('<title>Redirecting to ')) { 
+        String redirectFilepath = body.substringBetween('<title>Redirecting to ','</title>'); 
+        redirectFilepath = redirectFilepath.replace('&amp;','&');
+          
+        res = getHttpCalloutResponse(redirectFilepath);
+        //System.debug('Content-Type: '+res.getHeader('Content-Type'));
+        //System.debug('Body: '+res.getBody());
+        
+        attach.ContentType = res.getHeader('Content-Type');
+        attach.Body = res.getBodyAsBlob();
+      } else {
+        //attach.Body = res.getBodyAsBlob();
+      }
+      
+      return attach;
+    }
+
+    private static void attachFileToContact(Attachment attach, Contact con) {
+      Id contactId = con.Id;
+      attach.ParentId = contactId;
+      
+      System.debug('Body: '+attach.Body);
+      //insert attach;
+    }
+    
+    private static void addFilepathAsNoteToContact(String filepath, Contact con) {
+      Note note = new Note();
+      note.ParentId = con.Id;
+      note.Title = 'Audiogram File';
+      note.Body = '<a href="'+filepath+'">Click Here to Download</a>';
+     
+      insert note;
+    }
+    
+    private static Contact createContact(String name, String email, String phone) {        
+      Contact con = new Contact();
+      con.LastName = (String.isEmpty(name)) ? '(TBD)' : name;
+      con.Email = (String.isEmpty(email)) ? 'tbd@test.com' : email;
+      con.Phone = (String.isEmpty(phone)) ? '(TBD)' : phone;
+      System.debug('New Contact('+con.LastName+', '+con.Email+', '+con.Phone+')'); 
+        
+      insert con;
+      
+      return con;
+    }
+
+    // Field IDs
+  private static final String NAME_ID = 'textfield_4186535';
+  private static final String EMAIL_ID = 'textfield_4186537';    
+  private static final String PHONE_ID = 'textfield_4186541';
+  private static final String FILE_ID = 'fileupload_4185829';
+
+    private static void parseTypeformResponse(String responseBody) {
+      JSONParser parser = JSON.createParser(responseBody);
+      String name;
+      String email;
+      String filepath;
+      String phone;
+      
+      while (parser.nextValue() != null) {
+        // Get responses array
+        if (parser.getCurrentName() == 'responses') {
+          if (parser.getCurrentToken() == JSONToken.START_ARRAY) {
+            while(parser.nextToken() != null) {
+              // Get a set of answers
+              if((parser.getCurrentName() == 'answers') && (parser.getCurrentToken() == JSONToken.START_OBJECT)){
+               while(parser.nextToken() != null) {
+                if((parser.getCurrentName() == NAME_ID) && (parser.getCurrentToken() == JSONToken.VALUE_STRING)){
+                  name = parser.getText();
+                } else if ((parser.getCurrentName() == EMAIL_ID) && (parser.getCurrentToken() == JSONToken.VALUE_STRING)) {
+                    email = parser.getText(); 
+                } else if ((parser.getCurrentName() == FILE_ID) && (parser.getCurrentToken() == JSONToken.VALUE_STRING)) {
+                    filePath = parser.getText(); 
+                } else if ((parser.getCurrentName() == PHONE_ID) && (parser.getCurrentToken() == JSONToken.VALUE_STRING)) {
+                      phone = parser.getText(); 
+                      } else if ((parser.getCurrentName() == 'answers') && (parser.getCurrentToken() == JSONToken.END_OBJECT)) {
+                          if(!String.isEmpty(filePath)) {
+                          Contact con = createContact(name,email,phone);
+                            addFilepathAsNoteToContact(filepath, con);
+                          //Attachment attach = getAttachment(filePath);
+                          //attachFileToContact(attach, con);
+                          }
+                        break; 
+                      } 
+                    } 
+                  }
+                }
+              }
+            }                      
+          }      
+        }
+
+}

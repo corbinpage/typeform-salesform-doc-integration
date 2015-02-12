@@ -1,0 +1,39 @@
+
+{% extends "raw.twig" %}
+
+{% block content %}
+    <script type="text/javascript" language="JavaScript"
+        src="https://secureform.luxsci.com/intranet/php/secureform.php?v=1&c=12775-2794-sfkh&f=submit_your_audiogram_cart"></script>
+
+    <form name="submit_your_audiogram_cart" id="audiogram-form-cart"
+        enctype="multipart/form-data" method="post" action="https://secureform.luxsci.com/perl/post/12775-2794-sfkh" class="cart"
+    >
+        <input type="hidden" name="name">
+        <input type="hidden" name="email">
+        <input type="hidden" name="phone">
+
+        <input type="hidden" name="redirect_to" value="http://{{ function('audicus_get_host_with_port') }}/send-us-your-audiogram/cart-form/#thanks">
+
+        <div class="file-wrapper">
+            <input name="audiogram" type="file" title="Please select a file" required>
+            <span class="upload-input-message">Upload your audiogram</span>
+            <br><span class="optional-message">(if you have one)</span>
+        </div>
+    </form>
+{% endblock %}
+
+{% block footer_scripts %}
+    <script>
+        $('input[name=audiogram]').on('change', function (e) {
+            sendIframeMessage(window.parent, 'audiogram-file-present');
+        });
+
+        listenIframeMessage('submit-audiogram-form', function (event, data) {
+            $('input[name=name]').val(data.name);
+            $('input[name=email]').val(data.email);
+            $('input[name=phone]').val(data.phone);
+            $('#audiogram-form-cart').submit();
+        });
+    </script>
+{% endblock %}
+-bash-4.2$ 

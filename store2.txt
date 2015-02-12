@@ -1,0 +1,125 @@
+public class TypeformIntegration {
+
+  public void getNewAudiograms(String url) {
+    HttpResponse res = getHttpCalloutResponse(url);
+    parseTypeformResponse(res.getBody());
+    
+    
+  }
+  
+  
+  // Pass in the endpoint to be used using the string url
+  private static HttpResponse getHttpCalloutResponse(String url) {
+    // Instantiate a new http object
+    Http h = new Http();
+
+    // Instantiate a new HTTP request, specify the method (GET) as well as the endpoint
+    HttpRequest req = new HttpRequest();
+    req.setEndpoint(url);
+    req.setMethod('GET');
+    HttpResponse res = new HttpResponse();
+    //req.setHeader('Content-Transfer-Encoding','base64');
+    
+    try {
+      // Send the request, and return a response
+      res = h.send(req); 
+
+      //Helpful debug messages
+      //System.debug(res.getHeader('Content-Type')); // 'text/html; charset=UTF-8'
+      //System.debug(res.getBody());
+      
+      return res;
+      
+      //System.debug('CP Body:'+res.getBodyAsBlob());
+      //System.debug('CP STATUS:'+res.getStatus());
+      //System.debug('CP STATUS_CODE:'+res.getStatusCode());         
+      
+    } catch(System.CalloutException e) {
+      System.debug('Typeform Request Failed..');
+        //System.debug(res.toString());
+        //System.debug(res.getBody());
+        //System.debug('STATUS:'+res.getStatus());
+        //System.debug('STATUS_CODE:'+res.getStatusCode());
+      return res;
+    }  
+  }
+
+  private static Attachment getAttachment(String filepath) {
+    Attachment attach = new Attachment();
+    attach.Name = 'audiogram.pdf';
+    attach.IsPrivate = false;
+    
+    HttpResponse res = getHttpCalloutResponse(filepath);
+    String body = res.getBody();
+        //System.debug('Body: '+res.getBody());
+    
+    String newFilePath = res.getBody().substring(body.indexOf('<title>Redirecting to ')+22, body.indexOf('</title>')); 
+    newFilePath.replace('&amp;','&');
+    System.debug('New: '+newFilePath);
+
+    res = getHttpCalloutResponse(newFilePath);        
+        //System.debug('Body: '+res.getBody());
+    attach.Body = res.getBodyAsBlob();
+    
+    return attach;
+  }
+  
+  private static void attachFileToContact(Attachment attach, Contact con) {
+    Id contactId = con.Id;
+    attach.ParentId = contactId;
+    
+    insert attach;
+  }
+  
+  private static Contact createContact(String name, String email, String phone) {        
+    Contact con = new Contact();
+    
+    con.FirstName = name;
+    //con.FirstName = name; 
+    //con.LastName = lastName; 
+    con.Email = email;
+    //con.Phone = phone;
+    //insert con;
+    
+    return con;
+  }
+
+  private static void parseTypeformResponse(String responseBody) {        
+    JSONParser parser = JSON.createParser(responseBody);
+    String name;
+    String filePath;
+    String phone;
+    
+    while (parser.nextValue() != null) {
+      // Get responses array
+      if (parser.getCurrentName() == 'responses') {
+        if (parser.getCurrentToken() == JSONToken.START_ARRAY) {
+          while(parser.nextToken() != null) {
+            // Get a set of answers
+            if((parser.getCurrentName() == 'answers') && (parser.getCurrentToken() == JSONToken.START_OBJECT)){
+             while(parser.nextToken() != null) {
+              if((parser.getCurrentName() == 'textfield_3502894') && (parser.getCurrentToken() == JSONToken.VALUE_STRING)){
+                name = parser.getText();
+              } else if ((parser.getCurrentName() == 'fileupload_3506277') && (parser.getCurrentToken() == JSONToken.VALUE_STRING)) {
+                filePath = parser.getText(); 
+              } else if ((parser.getCurrentName() == 'textfield_3506278') && (parser.getCurrentToken() == JSONToken.VALUE_STRING)) {
+                phone = parser.getText(); 
+              } else if ((parser.getCurrentName() == 'answers') && (parser.getCurrentToken() == JSONToken.END_OBJECT)) {
+                
+                System.debug('------------------------------'); 
+                System.debug('Contact('+name+', '+filePath+', '+phone+')'); 
+                
+                Contact con = createContact(name,'test@test.com','8675309');
+                Attachment attach = getAttachment(filePath);
+                attachFileToContact(attach, con);
+                break; 
+              } 
+            } 
+          }
+        }
+      }
+    }                      
+  }      
+}
+
+}

@@ -19,3 +19,4 @@ gem "zendesk_api"
 gem 'pry'
 gem 'json'
 
+gem 'rest_client'
